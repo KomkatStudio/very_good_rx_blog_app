@@ -1,5 +1,5 @@
-name: very_good_blog_app
-description: My Very Good Blog App
+name: very_good_rx_blog_app
+description: My Very Good Rx Blog App
 version: 1.0.0+1
 repository: https://github.com/dungngminh/very_good_blog_app
 publish_to: none
@@ -24,8 +24,11 @@ dependencies:
   cloud_messaging_service:
     path: packages/cloud_messaging_service
   connectivity_plus: ^2.3.6+1
+
   draggable_home:
-    path: packages/draggable_home_implement
+    git:
+      url: https://github.com/dungngminh/draggable_home
+      ref: ec8c4b6
   easy_debounce: ^2.0.2+1
   equatable: ^2.0.5
   firebase_core: ^1.21.1
