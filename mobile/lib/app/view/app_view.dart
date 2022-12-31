@@ -16,10 +16,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive/hive.dart';
 import 'package:user_repository/user_repository.dart';
-import 'package:very_good_blog_app/app/app.dart';
-import 'package:very_good_blog_app/authentication/authentication.dart';
-import 'package:very_good_blog_app/di/di.dart';
-import 'package:very_good_blog_app/l10n/l10n.dart';
+import 'package:very_good_rx_blog_app/app/app.dart';
+import 'package:very_good_rx_blog_app/di/di.dart';
+import 'package:very_good_rx_blog_app/l10n/l10n.dart';
 
 class VeryGoodBlogApp extends StatelessWidget {
   const VeryGoodBlogApp({super.key});
@@ -30,25 +29,25 @@ class VeryGoodBlogApp extends StatelessWidget {
       providers: [
         RepositoryProvider<AuthenticationRepository>(
           create: (_) => AuthenticationRepository(
-            dataSource: injector<AuthenticationRemoteDataSource>(),
+            dataSource: getIt<AuthenticationRemoteDataSource>(),
           ),
         ),
         RepositoryProvider<UserRepository>(
           create: (_) => UserRepository(
-            userDataSource: injector<UserRemoteDataSource>(),
-            firebaseStorageService: injector<FirebaseStorageService>(),
+            userDataSource: getIt<UserRemoteDataSource>(),
+            firebaseStorageService: getIt<FirebaseStorageService>(),
           ),
         ),
         RepositoryProvider<BlogRepository>(
           create: (_) => BlogRepository(
-            remoteDataSource: injector<BlogRemoteDataSource>(),
-            firebaseStorageSerivce: injector<FirebaseStorageService>(),
+            remoteDataSource: getIt<BlogRemoteDataSource>(),
+            firebaseStorageSerivce: getIt<FirebaseStorageService>(),
           ),
         ),
         RepositoryProvider<BookmarkRepository>(
           create: (_) => BookmarkRepository(
-            localDataSource: injector<BookmarkLocalDataSource>(),
-            remoteDataSource: injector<BookmarkRemoteDataSource>(),
+            localDataSource: getIt<BookmarkLocalDataSource>(),
+            remoteDataSource: getIt<BookmarkRemoteDataSource>(),
           ),
         ),
       ],
@@ -67,40 +66,31 @@ class VeryGoodBlogAppView extends StatefulWidget {
 class _VeryGoodBlogAppViewState extends State<VeryGoodBlogAppView> {
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AuthenticationBloc>(
-          create: (context) => AuthenticationBloc(
-            authenticationRepository: context.read<AuthenticationRepository>(),
-          ),
+    return MaterialApp.router(
+      title: 'Very Good Blog App',
+      debugShowCheckedModeBanner: false,
+      routeInformationProvider: AppRoutes.route.routeInformationProvider,
+      routeInformationParser: AppRoutes.route.routeInformationParser,
+      routerDelegate: AppRoutes.route.routerDelegate,
+      theme: ThemeData(
+        useMaterial3: true,
+        fontFamily: FontFamily.nunito,
+        inputDecorationTheme: const InputDecorationTheme(
+          border: InputBorder.none,
         ),
-      ],
-      child: MaterialApp.router(
-        title: 'Very Good Blog App',
-        debugShowCheckedModeBanner: false,
-        routeInformationProvider: AppRoutes.route.routeInformationProvider,
-        routeInformationParser: AppRoutes.route.routeInformationParser,
-        routerDelegate: AppRoutes.route.routerDelegate,
-        theme: ThemeData(
-          useMaterial3: true,
-          fontFamily: FontFamily.nunito,
-          inputDecorationTheme: const InputDecorationTheme(
-            border: InputBorder.none,
-          ),
-          primaryColorDark: AppPalette.primaryColor,
-          primaryColor: AppPalette.primaryColor,
-          textSelectionTheme: const TextSelectionThemeData(
-            cursorColor: AppPalette.primaryColor,
-          ),
+        primaryColorDark: AppPalette.primaryColor,
+        primaryColor: AppPalette.primaryColor,
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: AppPalette.primaryColor,
         ),
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
       ),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 

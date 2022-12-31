@@ -1,0 +1,4 @@
+name: very_good_rx_blog_app
+
+packages:
+  - packages/**

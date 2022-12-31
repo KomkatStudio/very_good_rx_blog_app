@@ -2,7 +2,9 @@ include: package:very_good_analysis/analysis_options.3.0.1.yaml
 
 analyzer:
   exclude:
+    - lib/**/*.config.dart
     - lib/**/*.g.dart
+    - lib/**/*.chopper.dart
   strong-mode:
     implicit-dynamic: true
 

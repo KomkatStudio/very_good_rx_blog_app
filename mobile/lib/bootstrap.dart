@@ -13,7 +13,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:timeago/timeago.dart';
-import 'package:very_good_blog_app/di/di.dart';
+import 'package:very_good_rx_blog_app/di/di.dart';
 
 class AppBlocObserver extends BlocObserver {
   @override
