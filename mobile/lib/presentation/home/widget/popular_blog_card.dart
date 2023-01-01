@@ -1,14 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:models/models.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:very_good_rx_blog_app/app/app.dart';
-import 'package:very_good_rx_blog_app/blog/blog.dart';
-import 'package:very_good_rx_blog_app/bookmark/book_mark.dart';
-import 'package:very_good_rx_blog_app/profile/profile.dart';
 import 'package:very_good_rx_blog_app/presentation/widgets/widgets.dart';
 
 class PopularBlogCard extends StatelessWidget {
@@ -21,17 +15,7 @@ class PopularBlogCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => context.push(
-        AppRoutes.blog,
-        extra: ExtraParams4<BlogModel, ProfileBloc, BlogBloc, BookmarkBloc>(
-          param1: blog,
-          param2: context.read<ProfileBloc>(),
-          param3: context.read<BlogBloc>(),
-          param4: context.read<BookmarkBloc>(),
-        ),
-      ),
-      child: Container(
+    return Container(
         width: context.screenHeight * 0.35,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
@@ -85,37 +69,18 @@ class PopularBlogCard extends StatelessWidget {
                     child: CircleAvatar(
                       backgroundColor:
                           AppPalette.whiteBackgroundColor.withOpacity(0.4),
-                      child: Builder(
-                        builder: (context) {
-                          final bookmarks =
-                              context.watch<BookmarkBloc>().state.bookmarks;
-                          final isInUserBookmark = bookmarks.any(
-                            (bookmark) => bookmark.id == blog.id,
-                          );
-                          return InkEffectIconButton(
-                            onPressed: isInUserBookmark
-                                ? () {
-                                    context
-                                        .read<BookmarkBloc>()
-                                        .add(BookmarkRemoveBlog(blog: blog));
-                                  }
-                                : () {
-                                    context
-                                        .read<BookmarkBloc>()
-                                        .add(BookmarkAddBlog(blog: blog));
-                                  },
-                            child: isInUserBookmark
-                                ? Assets.icons.closeSquare.svg(
+                      child: InkEffectIconButton(
+                            
+                            child: 
+                                Assets.icons.closeSquare.svg(
                                     color: AppPalette.purple700Color,
                                     height: 28,
                                   )
-                                : Assets.icons.bookmark.svg(
-                                    color: AppPalette.purple700Color,
-                                    height: 24,
-                                  ),
-                          );
-                        },
-                      ),
+                                // : Assets.icons.bookmark.svg(
+                                //     color: AppPalette.purple700Color,
+                                //     height: 24,
+                                //   ),
+                          ),
                     ),
                   ),
                 ),
@@ -179,7 +144,6 @@ class PopularBlogCard extends StatelessWidget {
             )
           ],
         ),
-      ),
-    );
+      );
   }
 }

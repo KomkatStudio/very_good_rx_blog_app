@@ -1,15 +1,11 @@
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:very_good_rx_blog_app/app/app.dart';
-import 'package:very_good_rx_blog_app/blog/blog.dart';
-import 'package:very_good_rx_blog_app/bookmark/book_mark.dart';
-import 'package:very_good_rx_blog_app/presentation/home/widget/widget.dart';
 import 'package:very_good_rx_blog_app/l10n/l10n.dart';
-import 'package:very_good_rx_blog_app/profile/profile.dart';
+import 'package:very_good_rx_blog_app/presentation/home/widget/widget.dart';
 import 'package:very_good_rx_blog_app/presentation/widgets/blog_card_placeholder.dart';
 import 'package:very_good_rx_blog_app/presentation/widgets/widgets.dart';
 
@@ -19,96 +15,65 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<BlogBloc, BlogState>(
-          listener: (context, state) {
-            if (state.getBlogStatus == LoadingStatus.error) {
-              Fluttertoast.cancel();
-              Fluttertoast.showToast(msg: l10n.fetchingFailedPlsTryAgain);
-            }
-          },
-        ),
-        BlocListener<BookmarkBloc, BookmarkState>(
-          listenWhen: (previous, current) =>
-              previous.actionBookmarkStatus != current.actionBookmarkStatus,
-          listener: (context, state) {
-            if (state.actionBookmarkStatus == ActionBookmarkStatus.addDone) {
-              Fluttertoast.cancel();
-              Fluttertoast.showToast(
-                msg: l10n.addedToSavedList,
-              );
-            }
-            if (state.actionBookmarkStatus == ActionBookmarkStatus.removeDone) {
-              Fluttertoast.cancel();
-              Fluttertoast.showToast(
-                msg: l10n.removedFromSavedList,
-              );
-            }
-          },
-        ),
-      ],
-      child: DismissFocusKeyboard(
-        child: Scaffold(
-          body: RefreshIndicator(
-            color: AppPalette.primaryColor,
-            onRefresh: () async =>
-                context.read<BlogBloc>().add(const BlogGetBlogs()),
-            child: SingleChildScrollView(
-              primary: true,
-              padding: EdgeInsets.only(top: context.padding.top + 16),
-              child: Column(
-                children: [
-                  const _Header(),
-                  const _SearchField(),
-                  Builder(
-                    builder: (context) {
-                      final currentCategory = context.select(
-                        (BlogBloc blogBloc) => blogBloc.state.category,
+    return DismissFocusKeyboard(
+      child: Scaffold(
+        body: RefreshIndicator(
+          color: AppPalette.primaryColor,
+          onRefresh: () {},
+          child: SingleChildScrollView(
+            primary: true,
+            padding: EdgeInsets.only(top: context.padding.top + 16),
+            child: Column(
+              children: [
+                const _Header(),
+                const _SearchField(),
+                Builder(
+                  builder: (context) {
+                    final currentCategory = context.select(
+                      (BlogBloc blogBloc) => blogBloc.state.category,
+                    );
+                    final isSearching = context.select(
+                      (BlogBloc blogBloc) => blogBloc.state.isSearching,
+                    );
+                    if (currentCategory == 'all' && isSearching == false) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const _CategoryChoiceBar(),
+                          _buildHeadTitle(l10n.popular),
+                          const _PopularBlogList(),
+                          _buildHeadTitle(l10n.allBlogs),
+                          const _MoreBlogList(),
+                        ],
                       );
-                      final isSearching = context.select(
-                        (BlogBloc blogBloc) => blogBloc.state.isSearching,
+                    } else if (currentCategory != 'all' &&
+                        isSearching == false) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const _CategoryChoiceBar(),
+                          _buildHeadTitle(
+                            l10n.blogsOfCategory(currentCategory),
+                          ),
+                          const _MoreBlogList(),
+                        ],
                       );
-                      if (currentCategory == 'all' && isSearching == false) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const _CategoryChoiceBar(),
-                            _buildHeadTitle(l10n.popular),
-                            const _PopularBlogList(),
-                            _buildHeadTitle(l10n.allBlogs),
-                            const _MoreBlogList(),
-                          ],
-                        );
-                      } else if (currentCategory != 'all' &&
-                          isSearching == false) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const _CategoryChoiceBar(),
-                            _buildHeadTitle(
-                              l10n.blogsOfCategory(currentCategory),
-                            ),
-                            const _MoreBlogList(),
-                          ],
-                        );
-                      } else {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _buildHeadTitle(
-                              l10n.resultSearch,
-                              padding: const EdgeInsets.fromLTRB(24, 8, 0, 16),
-                            ),
-                            const _MoreBlogList(),
-                          ],
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
+                    } else {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildHeadTitle(
+                            l10n.resultSearch,
+                            padding: const EdgeInsets.fromLTRB(24, 8, 0, 16),
+                          ),
+                          const _MoreBlogList(),
+                        ],
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         ),
@@ -274,18 +239,9 @@ class _Header extends StatelessWidget {
             children: [
               Expanded(
                 flex: 2,
-                child: Builder(
-                  builder: (context) {
-                    final lastName = context.select(
-                          (ProfileBloc profileBloc) =>
-                              profileBloc.state.user?.lastName,
-                        ) ??
-                        l10n.user;
-                    return Text(
-                      l10n.helloUser(lastName),
-                      style: AppTextTheme.lightTextStyle.copyWith(fontSize: 15),
-                    );
-                  },
+                child: Text(
+                  l10n.helloUser('cool'),
+                  style: AppTextTheme.lightTextStyle.copyWith(fontSize: 15),
                 ),
               ),
               Expanded(
@@ -298,20 +254,9 @@ class _Header extends StatelessWidget {
             ],
           ),
           GestureDetector(
-            onTap: () => context.read<BlogBloc>().add(const BlogGetBlogs()),
-            child: Builder(
-              builder: (context) {
-                final avatarUrl = context.select(
-                  (ProfileBloc profileBloc) =>
-                      profileBloc.state.user?.avatarUrl,
-                );
-                return CircleAvatar(
-                  radius: 24,
-                  backgroundImage: avatarUrl == null || avatarUrl.isEmpty
-                      ? Assets.images.blankAvatar.image().image
-                      : NetworkImage(avatarUrl),
-                );
-              },
+            child: CircleAvatar(
+              radius: 24,
+              backgroundImage: Assets.images.blankAvatar.image().image,
             ),
           ),
         ],
@@ -335,41 +280,20 @@ class _CategoryChoiceBar extends StatelessWidget {
         clipBehavior: Clip.none,
         itemBuilder: (context, index) {
           final category = categories[index];
-          return Builder(
-            builder: (context) {
-              final currentCategory = context
-                  .select((BlogBloc blogBloc) => blogBloc.state.category);
-              return GestureDetector(
-                onTap: currentCategory != category
-                    ? () {
-                        FocusManager.instance.primaryFocus?.unfocus();
-                        context
-                            .read<BlogBloc>()
-                            .add(BlogCategoryPressed(catagory: category));
-                      }
-                    : null,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
-                  decoration: BoxDecoration(
-                    color: currentCategory == category
-                        ? Theme.of(context).primaryColor
-                        : AppPalette.fieldColor,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    l10n.category(category),
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: currentCategory == category
-                          ? AppPalette.whiteBackgroundColor
-                          : AppPalette.unSelectedTextChipColor,
-                    ),
-                  ),
-                ),
-              );
-            },
+          return Container(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              l10n.category(category),
+              style: const TextStyle(
+                fontSize: 16,
+                color: AppPalette.whiteBackgroundColor,
+              ),
+            ),
           );
         },
         separatorBuilder: (BuildContext context, int index) {
@@ -413,7 +337,7 @@ class _SearchField extends StatelessWidget {
         onChanged: (value) => EasyDebounce.debounce(
           'searching',
           const Duration(milliseconds: 750),
-          () => context.read<BlogBloc>().add(BlogSearchChanged(value: value)),
+          () => {},
         ),
         style: AppTextTheme.regularTextStyle.copyWith(fontSize: 16),
       ),

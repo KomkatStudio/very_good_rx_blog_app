@@ -1,4 +1,6 @@
 class AuthBloc{
   
-  
+
+  final 
+
 }

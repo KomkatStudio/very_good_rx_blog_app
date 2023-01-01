@@ -8,25 +8,12 @@ environment:
   sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
-  authentication_data_source:
-    path: packages/authentication_data_source
-  authentication_repository:
-    path: packages/authentication_repository
-  blog_data_source:
-    path: packages/blog_data_source
-  blog_repository:
-    path: packages/blog_repository
-  bookmark_data_source:
-    path: packages/bookmark_data_source
-  bookmark_repository:
-    path: packages/bookmark_repository
+  auto_route: ^5.0.4
   cached_network_image: ^3.2.1
   chopper: ^6.0.0
-  cloud_messaging_service:
-    path: packages/cloud_messaging_service
   connectivity_plus: ^2.3.6+1
-
   dart_either: ^1.0.0
+  disposebag: ^1.5.1
   draggable_home:
     git:
       url: https://github.com/dungngminh/draggable_home
@@ -35,8 +22,7 @@ dependencies:
   equatable: ^2.0.5
   firebase_core: ^1.21.1
   firebase_storage: ^10.3.7
-  firebase_storage_service:
-    path: packages/firebase_storage_service
+
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.1
@@ -59,19 +45,17 @@ dependencies:
   intl: ^0.17.0
   json_annotation: ^4.7.0
   lazy_load_indexed_stack: ^0.1.4
-  models:
-    path: packages/models
   path_provider: ^2.0.11
   phosphor_flutter: ^1.4.0
   provider: ^6.0.5
+  rxdart: ^0.27.7
+  rxdart_ext: ^0.2.7
   shimmer: ^2.0.0
   timeago_flutter: ^1.2.0
-  user_data_source:
-    path: packages/user_data_source
-  user_repository:
-    path: packages/user_repository
+
 
 dev_dependencies:
+  auto_route_generator: ^5.0.2
   bloc_test: ^9.1.0
   build_runner: ^2.3.0
   chopper_generator: ^6.0.0

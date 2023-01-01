@@ -5,6 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+// ignore_for_file: strict_raw_type
+
 import 'dart:async';
 import 'dart:developer';
 
@@ -69,10 +71,10 @@ Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
       await Firebase.initializeApp();
       Bloc.observer = AppBlocObserver();
       await Hive.initFlutter();
-      await initServices();
+      await configureInjection();
       setLocaleMessages('vi', ViMessages());
       setDefaultLocale('vi');
-      runApp(await builder());
+        
     },
     (error, stackTrace) =>
         log(error.toString(), stackTrace: stackTrace, name: 'ERROR'),
